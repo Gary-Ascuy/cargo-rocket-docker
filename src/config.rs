@@ -36,21 +36,5 @@ pub fn parse() -> Config {
     file.read_to_string(&mut string).expect("Could not load docker configuration from Cargo.toml");
 
     let config: Config = toml::from_str(&string).expect("Could not parse with required parameters.");
-
-    //let config = Loader::from_file("./Cargo.toml").unwrap(); //.expect("as"); //.expect("Could not load docker configuration from Cargo.toml");
-    // let config: Config = toml::from_str(r#"
-    //     name = 'server'
-    //     version = '666.0.0'
-    //     [docker]
-    //     name = 'server'
-    //     version = '1.0.0'
-    //     maintainer = 'fromfile<file@from.com>'
-    //     [docker.packages]
-    //     build = "asd"
-    //     image = "xxxxx"
-    // "#).expect("asdsad");
-
-    // println!("aaa {}", config.version);
-
     config
 }
