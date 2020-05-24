@@ -5,7 +5,7 @@ authors = ["Gary Ascuy <gary.ascuy@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/DenisKolodin/cargo-docker"
 description = "A cargo subcommand to create docker image from rocket project"
-readme = "readme.md"
+readme = "public.readme.md"
 license = "MIT"
 
 [dev-dependencies]
