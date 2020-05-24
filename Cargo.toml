@@ -11,6 +11,7 @@ license = "MIT"
 [dependencies]
 handlebars = "3.0.1"
 serde_json = "1.0.53"
+serde = "1.0.110"
 
 [dev-dependencies]
 cargo-watch = "7.3.0"
