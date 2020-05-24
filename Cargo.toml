@@ -1,6 +1,6 @@
 [package]
 name = "cargo-rocket-docker"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Gary Ascuy <gary.ascuy@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/Gary-Ascuy/cargo-rocket-docker.git"
@@ -27,6 +27,7 @@ tag = "garyascuy/server"
 tags = [
     "garyascuy/server:1.0.0",
     "garyascuy/server:latest",
+    "registry.gitlab.com/project/group/user/server:latest",
 ]
 
 [docker.packages]
