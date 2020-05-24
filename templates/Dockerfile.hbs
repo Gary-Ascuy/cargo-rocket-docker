@@ -1,27 +1,29 @@
 # Build Stage
 FROM rustlang/rust:nightly-alpine as builder
-LABEL maintainer="{{{maintainer}}}"
+LABEL maintainer="{{choose docker.maintainer "Gary Ascuy <gary.ascuy@gmail.com>"}}"
+LABEL version="{{choose docker.version package.version}}"
 
 WORKDIR /code
 RUN apk update \
-    && apk add build-base openssl-dev zlib-dev {{{packages.build}}} \
+    && apk add build-base openssl-dev zlib-dev {{{docker.packages.build}}} \
     && rm -rf /var/cache/apk/*
 COPY . .
 RUN cargo build --release
 
 # Image Stage
 FROM alpine:latest
-LABEL maintainer="{{{maintainer}}}"
+LABEL maintainer="{{choose docker.maintainer "Gary Ascuy <gary.ascuy@gmail.com>"}}"
+LABEL version="{{choose docker.version package.version}}"
 
 ENV ROCKET_ENV=production \
     ROCKET_ADDRESS=0.0.0.0 ROCKET_PORT=3666 \
     ROCKET_LOG=critical
-{{#if packages.image}}
+{{#if docker.packages.image}}
 RUN apk update \
-    && apk add {{{packages.image}}} \
+    && apk add {{{docker.packages.image}}} \
     && rm -rf /var/cache/apk/*
 {{/if}}
 EXPOSE 3666
 
-COPY --from=builder /code/target/release/{{{name}}} /usr/local/bin/{{{name}}}
-CMD {{{name}}}
+COPY --from=builder /code/target/release/{{choose docker.name package.name}} /usr/local/bin/{{choose docker.name package.name}}
+CMD {{choose docker.name package.name}}

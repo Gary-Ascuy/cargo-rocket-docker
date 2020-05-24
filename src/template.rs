@@ -2,13 +2,26 @@ use std::path::{Path, PathBuf};
 use std::io::Write;
 use std::fs::File;
 
-use handlebars::Handlebars;
+use handlebars::{Handlebars, RenderContext, Helper, Context, JsonRender, HelperResult, Output};
 use serde::ser::Serialize;
+
+fn choose_helper(h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
+    let default = h.param(1).unwrap();
+    let value = h.param(0).unwrap_or(default);
+    match value.value().render().as_mut_str().trim().is_empty() {
+        true => out.write(default.value().render().as_ref())?,
+        false => out.write(value.value().render().as_ref())?,
+    }
+    Ok(())
+}
 
 pub fn register_templates() -> Handlebars<'static> {
     let mut hbs = Handlebars::new();
     hbs.register_template_file("Dockerfile", "./templates/Dockerfile.hbs").expect("Could not read ./template/Dockerfile.hbs file.");
     hbs.register_template_file(".dockerignore", "./templates/.dockerignore.hbs").expect("Could not read ./template/.dockerignore.hbs file.");
+
+    hbs.register_helper("choose", Box::new(choose_helper));
+    
     hbs
 }
 
