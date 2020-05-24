@@ -23,7 +23,11 @@ cargo-edit = "0.6.0"
 name = 'server'
 version = '1.6.6'
 maintainer = 'fromfile<file@from.com>'
-image = "garyascuy/server"
+tag = "garyascuy/server"
+tags = [
+    "garyascuy/server:1.0.0",
+    "garyascuy/server:latest",
+]
 
 [docker.packages]
 build = "imagemagick"
