@@ -1,10 +1,10 @@
 [package]
 name = "cargo-rocket-docker"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Gary Ascuy <gary.ascuy@gmail.com>"]
 edition = "2018"
-repository = "https://github.com/DenisKolodin/cargo-docker"
-description = "A cargo subcommand to create docker image from rocket project"
+repository = "https://github.com/Gary-Ascuy/rust-rest-api.git"
+description = "A cargo subcommand to create docker image from Rocket project"
 readme = "public.readme.md"
 license = "MIT"
 
