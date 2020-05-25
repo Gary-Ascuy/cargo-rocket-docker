@@ -1,10 +1,12 @@
 [package]
 name = "cargo-rocket-docker"
-version = "0.1.5"
+version = "0.2.0"
 authors = ["Gary Ascuy <gary.ascuy@gmail.com>"]
 edition = "2018"
+categories = ["development-tools"]
+keywords = ["cargo-subcommand", "cargo", "docker", "rocket", "tool"]
 repository = "https://github.com/Gary-Ascuy/cargo-rocket-docker.git"
-description = "WIP: A cargo subcommand to create docker image from Rocket project"
+description = "WIP: Docker subcommand to create docker image for Rocket projects"
 readme = "public.readme.md"
 license = "MIT"
 
@@ -14,10 +16,24 @@ serde_json = "1.0.53"
 serde = "1.0.110"
 toml = "0.5.6"
 serde_derive = "1.0.110"
+clap = "2.33.1"
+atty = { version = "0.2.14", optional = true }
+structopt = { version = "0.3.14", optional = true }
+colored = "1.9.3"
 
 [dev-dependencies]
 cargo-watch = "7.3.0"
 cargo-edit = "0.6.0"
+
+[[bin]]
+name = "cargo-docker"
+path = "src/main.rs"
+required-features = ["docker"]
+
+[features]
+default = ["docker"]
+docker = ["cli"]
+cli = ["atty", "structopt"]
 
 [docker]
 name = 'server'

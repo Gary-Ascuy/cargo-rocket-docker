@@ -17,11 +17,12 @@ fn choose_helper(h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContex
 
 pub fn register_templates() -> Handlebars<'static> {
     let mut hbs = Handlebars::new();
-    hbs.register_template_file("Dockerfile", "./templates/Dockerfile.hbs").expect("Could not read ./template/Dockerfile.hbs file.");
-    hbs.register_template_file(".dockerignore", "./templates/.dockerignore.hbs").expect("Could not read ./template/.dockerignore.hbs file.");
+    let base = Path::new(env!("CARGO_MANIFEST_DIR"));
+
+    hbs.register_template_file("Dockerfile", base.join("./templates/Dockerfile.hbs")).expect("Could not read ./template/Dockerfile.hbs file.");
+    hbs.register_template_file(".dockerignore", base.join("./templates/.dockerignore.hbs")).expect("Could not read ./template/.dockerignore.hbs file.");
 
     hbs.register_helper("choose", Box::new(choose_helper));
-    
     hbs
 }
 

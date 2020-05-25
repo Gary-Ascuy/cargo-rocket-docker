@@ -1,6 +1,57 @@
 # Cargo Rocket Docker - Work In Progress (IMPORTANT)
 
-WIP: Sub command to create a docker image for Rocket Project.
+Sub-command to create a docker image for Rocket Project and build using Alpine OS.
+
+### Features 
+
+Creates Dockerfile & .dockerignore files into a rocket project.
+```sh
+$ cargo docker --eject
+```
+
+#### Add following settings in your `Cargo.toml`
+
+Basic Configuration
+```toml
+[docker]
+name = "package-name"
+version = "1.0.0"
+maintainer = "Team Name <mail@company.com>" 
+
+[docker.packages]
+build = "acf-openssl"
+image = "imagemagick second-pkg other-pkg"
+```
+
+Alternative with Alpine PKG Dependencies for development and production
+```toml
+[docker]
+name = "package-name"
+version = "1.0.0"
+maintainer = "Team Name <mail@company.com>" 
+
+[docker.packages]
+build = "acf-openssl"
+image = "imagemagick second-pkg other-pkg"
+```
+
+Descriptions
+```toml
+[docker]
+name = "package-name" # docker will copy from target/release/{package-name}
+version = "1.0.0"     # Docker image version
+maintainer = "Team Name <mail@company.com>" 
+tag = "account/back" # Docker tag base, it will create account/back:{version} and account/back:latest
+tags = [ # docker build will use these spesific tags to create the images and publish
+    "garyascuy/server:1.0.0",
+    "garyascuy/server:latest",
+]
+
+# Optional install extra packages in Alpine OS
+[docker.packages]
+build = "acf-openssl" # apk add acf-openssl in build image, development dependencies
+image = "imagemagick second-pkg other-pkg" # add packages in final image, production dependencies
+```
 
 ### IDEA
 
