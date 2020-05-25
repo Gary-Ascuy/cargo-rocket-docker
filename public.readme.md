@@ -52,6 +52,10 @@ Do you need some custom? Create files and maintaing by yourself ಠ_ಠ:
 $ cargo docker --eject
 ```
 
+I don't understand? Learn by Example:
+
+[Rust Rest API][https://github.com/Gary-Ascuy/rust-rest-api] Basic API with Rocket in Rust
+
 There's a lot more you can do! Here's a copy of the help:
 ```sh
 USAGE:
@@ -91,19 +95,28 @@ Descriptions
 ```toml
 # Cargo Docker Settings
 [docker]
-name = "app-bin-name" # docker will copy from target/release/{app-bin-name}
-version = "1.0.0"     # Docker image version
-maintainer = "Team Name <mail@company.com>" # Responsible for image
-tag = "account/back" # Docker tag base, it will create account/back:{version} and account/back:latest
-custom_tags = [ # docker build will use these spesific tags to create the images and publish
+# docker will copy bin from target/release/{app-bin-name}
+name = "app-bin-name" 
+# Docker image version
+version = "1.0.0"     
+# Responsible for image
+maintainer = "Team Name <mail@company.com>" 
+# Docker tag base, it will create tho images:
+# account/back:{version} and account/back:latest
+tag = "account/back" 
+
+# docker build will use these spesific tags to create the images and publish
+custom_tags = [
     "garyascuy/server:1.0.0",
     "garyascuy/server:latest",
 ]
 
 # Optional install extra packages in Alpine OS
 [docker.packages]
-build = "acf-openssl" # apk add acf-openssl in build image, development dependencies
-image = "imagemagick second-pkg other-pkg" # add packages in final image, production dependencies
+# apk add acf-openssl in build image, development dependencies
+build = "acf-openssl"
+# add packages in final image, production dependencies
+image = "imagemagick second-pkg other-pkg"
 ```
 
 ## About
