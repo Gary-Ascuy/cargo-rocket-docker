@@ -14,6 +14,36 @@ fn print_into(command: &ColoredString) {
     println!("");
 }
 
+fn get_all_tags(config: &mut config::Config) -> Vec<String> {
+    let mut all_tags = Vec::new();
+    let name = &config.package.name;
+    let version = &config.package.version;
+
+    if config.docker.is_some() {
+        let docker = config.docker.clone().unwrap();
+        let tag = docker.tag;
+        let docker_version = docker.version;
+        let custom_tags = docker.custom_tags;
+
+        if tag.is_some() {
+            let value = tag.unwrap();
+            all_tags.push(format!("{}:{}", value, docker_version.unwrap_or(version.clone())));
+            all_tags.push(format!("{}:{}", value, "latest"));
+        }
+
+        if custom_tags.is_some() {
+            for custom_tag in custom_tags.unwrap() {
+                all_tags.push(custom_tag);
+            }
+        }
+    } else {
+        all_tags.push(format!("{}:{}", name, version));
+        all_tags.push(format!("{}:{}", name, "latest"));
+    }
+
+    return all_tags;
+}
+
 fn main() {
     let opts = App::new("cargo")
         .bin_name("cargo")
@@ -81,54 +111,41 @@ fn main() {
 
     if build {
         print_into(&"Build".bright_green());
-        let tmp = "./some/dir";
-        fs::create_dir_all(tmp).expect("Could not create temporary directory for Docker");
-        template::save(tmp, &value.clone());
-        let dockerfile = Path::new(tmp).join("./Dockerfile").canonicalize().expect("Could not found Dockerfile in temporary directory");
+
+        let temp_conifg = value.clone();
+        let tmp = match temp_conifg.docker.is_some() {
+            true => temp_conifg.docker.unwrap().temp_folder.unwrap_or(String::from("./.tmp_cargo_docker")),
+            false => String::from("./.tmp_cargo_docker"),
+        };
+
+        fs::create_dir_all(tmp.as_str()).expect("Could not create temporary directory for Docker");
+        template::save(tmp.as_str(), &value.clone());
+        let dockerfile = Path::new(tmp.as_str()).join("./Dockerfile").canonicalize().expect("Could not found Dockerfile in temporary directory");
 
         let mut command = Command::new("docker");
         command.arg("build");
 
-        // match value.docker.is_some() {
-        //     true => 
-        // }
-
-        let mut check = value.clone();
-        if check.docker.is_some() && check.docker.unwrap().tag.is_some() {
-            let docker = value.clone();
-            let tag = format!("{}", docker.docker.unwrap().tag.unwrap());
-            command.arg("-t");
-            command.arg(format!("{}:{}", tag, value.package.version.as_str()));
-
-            command.arg("-t");
-            command.arg(format!("{}:{}", tag, "latest"));
+        let mut all_tags_config = value.clone();
+        let all_tags = get_all_tags(&mut all_tags_config);
+        for tag in all_tags.clone() {
+            command.arg("-t").arg(tag);
         }
 
-        check = value.clone();
-        if check.docker.is_some() && check.docker.unwrap().custom_tags.is_some() {
-            for tag in value.clone().docker.unwrap().custom_tags.unwrap() {
-                command.arg("-t");
-                command.arg(tag);
-            }
-        }
-
-        command.arg("--file");
-        command.arg(dockerfile.as_os_str());
+        command.arg("--file").arg(dockerfile.as_os_str());
         command.arg(".");
 
         println!("{}", "Docker Command".bright_green());
-        println!("  - {:?}", command);
-        println!("");
 
-        println!("********************    DOCKER    ********************");
+        println!("$ docker build \\\n    -t \"{}\" \\\n    --file \"{}\" \".\"", all_tags.clone().join("\" \\\n    -t \""), dockerfile.display());
+        println!("");
         
+        println!("{}", "Command Execution".bright_green());
         let status = command.status().expect("failed to execute process");
         
         if !keep_files {
             fs::remove_dir_all(tmp).expect("Could not remove temporal directory for Docker");
         }
         
-        println!("******************************************************");
         println!("");
         result = status.code().expect("Could not load status from Docker execution");
         
@@ -141,37 +158,21 @@ fn main() {
 
     if push {
         print_into(&"Push".bright_green());
-        
-        let mut check = value.clone();
-        let mut all_tags = vec![];
-        if check.docker.is_some() && check.docker.unwrap().tag.is_some() {
-            let docker = value.clone();
-            let tag = format!("{}", docker.docker.unwrap().tag.unwrap());
-            let tag_version = format!("{}:{}", tag, value.package.version.as_str());
-            let tag_latest = format!("{}:{}", tag, "latest");
-            all_tags.push(tag_version);
-            all_tags.push(tag_latest);
 
-            // Command::new("docker").arg("push").arg(tag_version).status().expect("Push");
-            // Command::new("docker").arg("push").arg(tag_latest).status().expect("Push");
-        }
+        let mut all_tags_config = value.clone();
+        let all_tags = get_all_tags(&mut all_tags_config);
 
-        check = value.clone();
-        if check.docker.is_some() && check.docker.unwrap().custom_tags.is_some() {
-            for tag in value.clone().docker.unwrap().custom_tags.unwrap() {
-                all_tags.push(tag);
-                // Command::new("docker").arg("push").arg(tag).status().expect("Push");
-            }
-        }
-
+        let commands = all_tags.join("\"\n$ docker push \"");
         println!("{}", "Docker Commands".bright_green());
-        println!("  - docker push {}", all_tags.join("\n  - docker push "));
+        println!("$ docker push \"{}\"", commands);
         println!("");
 
+        println!("{}", "Commands Execution".bright_green());
         for tag in all_tags {
-            let code = Command::new("docker").arg("push").arg(tag).status().expect("Push").code().expect("Error");
-            if code != 0 {
-                std::process::exit(code);
+            let command =  Command::new("docker").arg("push").arg(tag).status().expect("Could not docker push");
+            let exec_code = command.code().expect("Error");
+            if exec_code != 0 {
+                std::process::exit(exec_code);
             }
         }
 

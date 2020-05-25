@@ -23,6 +23,7 @@ pub struct Docker {
     pub version: Option<String>,
     pub image: Option<String>,
     pub maintainer: Option<String>,
+    pub temp_folder: Option<String>,
     pub tag: Option<String>,
     pub custom_tags: Option<Vec<String>>,
     pub packages: Option<Packages>,
