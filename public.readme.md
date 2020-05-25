@@ -16,11 +16,8 @@ Basic Configuration
 [docker]
 name = "package-name"
 version = "1.0.0"
-maintainer = "Team Name <mail@company.com>" 
-
-[docker.packages]
-build = "acf-openssl"
-image = "imagemagick second-pkg other-pkg"
+maintainer = "Team Name <mail@company.com>"
+tag = "garyascuy/package-name"
 ```
 
 Alternative with Alpine PKG Dependencies for development and production

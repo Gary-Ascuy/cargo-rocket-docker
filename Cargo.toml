@@ -1,6 +1,6 @@
 [package]
 name = "cargo-rocket-docker"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Gary Ascuy <gary.ascuy@gmail.com>"]
 edition = "2018"
 categories = ["development-tools"]
@@ -39,6 +39,7 @@ cli = ["atty", "structopt"]
 name = 'server'
 version = '1.6.6'
 maintainer = 'fromfile<file@from.com>'
+tempFolder = "./tmp"
 tag = "garyascuy/server"
 tags = [
     "garyascuy/server:1.0.0",
