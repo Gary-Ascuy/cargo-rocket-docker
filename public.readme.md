@@ -54,7 +54,9 @@ $ cargo docker --eject
 
 I don't understand? Learn by Example:
 
-[Rust Rest API][https://github.com/Gary-Ascuy/rust-rest-api] Basic API with Rocket in Rust
+[Rust Rest API][example] Basic API with Rocket in Rust
+
+[example]: https://github.com/Gary-Ascuy/rust-rest-api
 
 There's a lot more you can do! Here's a copy of the help:
 ```sh
