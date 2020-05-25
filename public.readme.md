@@ -1,60 +1,81 @@
-# Cargo Rocket Docker - Work In Progress (IMPORTANT)
+# Cargo Rocket Docker
 
-Sub-command to create a docker image for Rocket Project and build using Alpine OS.
+Automate tool sub-command to create a docker image for Rocket Project and build/publish them using Alpine OS.
 
-### Features 
+## Install 
 
-Creates Dockerfile & .dockerignore files into a rocket project.
 ```sh
-$ cargo docker --eject
+$ cargo install cargo-rocket-docker
 ```
 
-Build Docker Image from Rocket Project
+To upgrade:
+```sh
+$ cargo install --force cargo-rocket-docker
+```
+
+## Usage
+
+Add following section into `Cargo.toml` file
+```toml
+[docker]
+name = "app-bin-name"
+version = "0.1.0"
+maintainer = "Team Name <mail.support@company.com>"
+temp_folder = "./.tmp_docker"
+tag = "garyascuy/cargo-rocket-example"
+```
+
+Build Docker Images
 ```sh
 $ cargo docker --build
 ```
 
-Push Docker images from Rocket Project
+Push Docker Images
 ```sh
 $ cargo docker --push
 ```
 
-Build and Push Docker images from Rocket Project, many alternatives
+All-In-One Command? Type following command:
+```sh
+$ cargo docker --build --push --keep-temporary-files
+```
+
+All-In-One Command still long? Here more alternatives:
 ```sh
 $ cargo docker --all
 $ cargo docker -a
 $ cargo docker -bpk # [B]uild, [P]ush, [K] Keep Docker Files
 ```
 
-#### Add following settings in your `Cargo.toml`
-
-Basic Configuration
-```toml
-[docker]
-name = "server"
-version = "0.1.0"
-maintainer = "Team Name <mail@company.com>"
-tag = "garyascuy/cargo-rocket-example"
+Do you need some custom? Create files and maintaing by yourself ಠ_ಠ:
+```sh
+$ cargo docker --eject
 ```
 
-```toml
-[docker]
-name = "server"
-version = "0.1.0"
-maintainer = "Team Name <mail@company.com>"
-tag = "garyascuy/cargo-rocket-example"
-custom_tags = [
-    "registry.gitlab.com/garyascuy:latest",
-    "registry.gitlab.com/garyascuy:1.0.0",
-]
+There's a lot more you can do! Here's a copy of the help:
+```sh
+USAGE:
+    cargo docker [FLAGS]
+
+FLAGS:
+    -a, --all                     build and publish docker images
+    -b, --build                   build docker images
+    -e, --eject                   eject Dockerfile and .dockerignofe files
+    -h, --help                    Prints help information
+    -k, --keep-temporary-files    Keep temporary files after build execution
+    -p, --push                    publish docker images
+    -V, --version                 Prints version information
 ```
 
-Alternative with Alpine PKG Dependencies for development and production
+## Config Properties
+
+Here Full Example && Custom Tags && Alpine Packages
 ```toml
 [docker]
-name = "package-name"
-version = "1.0.0"
-maintainer = "Team Name <mail@company.com>" 
+name = "app-bin-name"
+version = "0.1.0"
+maintainer = "Team Name <mail.support@company.com>"
+temp_folder = "./.tmp_docker"
 tag = "garyascuy/cargo-rocket-example"
 custom_tags = [
     "registry.gitlab.com/garyascuy:latest",
@@ -68,10 +89,11 @@ image = "imagemagick second-pkg other-pkg"
 
 Descriptions
 ```toml
+# Cargo Docker Settings
 [docker]
-name = "package-name" # docker will copy from target/release/{package-name}
+name = "app-bin-name" # docker will copy from target/release/{app-bin-name}
 version = "1.0.0"     # Docker image version
-maintainer = "Team Name <mail@company.com>" 
+maintainer = "Team Name <mail@company.com>" # Responsible for image
 tag = "account/back" # Docker tag base, it will create account/back:{version} and account/back:latest
 custom_tags = [ # docker build will use these spesific tags to create the images and publish
     "garyascuy/server:1.0.0",
@@ -84,40 +106,9 @@ build = "acf-openssl" # apk add acf-openssl in build image, development dependen
 image = "imagemagick second-pkg other-pkg" # add packages in final image, production dependencies
 ```
 
-### IDEA
+## About
 
-Creates a docker image based on alpine for project, and it allow you put tags tofor images, if you have operation system dependencies you can espesify into configuration.
+Created by [Gary Ascuy][garyascuy] and Follow me in [LinkedIn][garyascuylinkedin] or [GitHub][garyascuygithub] if you want :P.
 
-```sh
-$ cargo docker build
-
-# Variant for all flow
-$ cargo docker build --push 
-```
-
-Publish all images into the Docker repository.
-```sh
-$ cargo docker push 
-```
-
-Creates Dockerfile and ingore file to custumize acording to your requirement.
-```sh
-$ cargo docker exject 
-```
-
-Custom Configuration into `Cargo.toml`
-```toml
-[docker]
-name = 'server'
-version = '1.6.6'
-maintainer = 'fromfile<file@from.com>'
-tag = "garyascuy/server"
-tags = [
-    "garyascuy/server:1.0.0",
-    "garyascuy/server:latest",
-]
-
-[docker.packages]
-build = "imagemagick"
-image = "gary"
-```
+[garyascuygithub]: https://github.com/gary-ascuy
+[garyascuylinkedin]: https://www.linkedin.com/in/gary-ascuy-6619bbb9/

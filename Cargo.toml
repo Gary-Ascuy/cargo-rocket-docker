@@ -1,14 +1,15 @@
 [package]
 name = "cargo-rocket-docker"
-version = "0.3.0"
+version = "0.5.0"
 authors = ["Gary Ascuy <gary.ascuy@gmail.com>"]
 edition = "2018"
-categories = ["development-tools"]
+categories = ["command-line-utilities", "development-tools::cargo-plugins"]
 keywords = ["cargo-subcommand", "cargo", "docker", "rocket", "tool"]
 repository = "https://github.com/Gary-Ascuy/cargo-rocket-docker.git"
-description = "WIP: Docker subcommand to create docker image for Rocket projects"
+description = "Cargo sub-command tool for docker images into Rocket projects"
 readme = "public.readme.md"
 license = "MIT"
+license-file = "LICENSE"
 
 [dependencies]
 handlebars = "3.0.1"
@@ -36,17 +37,16 @@ docker = ["cli"]
 cli = ["atty", "structopt"]
 
 [docker]
-name = 'server'
-version = '1.6.6'
-maintainer = 'fromfile<file@from.com>'
-tempFolder = "./tmp"
-tag = "garyascuy/server"
-tags = [
-    "garyascuy/server:1.0.0",
-    "garyascuy/server:latest",
-    "registry.gitlab.com/project/group/user/server:latest",
+name = "cargo-rocket-docker"
+version = "1.0.0"
+maintainer = "Gary Ascuy <gary.ascuy@gmail.com>"
+temp_folder = "./.tmp_docker"
+tag = "garyascuy/cargo-rocket-example"
+custom_tags = [
+    "registry.gitlab.com/garyascuy:latest",
+    "registry.gitlab.com/garyascuy:1.0.0",
 ]
 
 [docker.packages]
-build = "imagemagick"
-image = "gary"
+build = "acf-openssl"
+image = "imagemagick second-pkg other-pkg"
