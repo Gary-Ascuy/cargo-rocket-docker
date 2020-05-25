@@ -1,33 +1,37 @@
 use toml;
 use serde_derive::{Serialize, Deserialize};
+use std::clone::Clone;
+
 use std::fs::File;
 use std::io::Read;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
-    package: Package,
-    docker: Option<Docker>,
+    pub package: Package,
+    pub docker: Option<Docker>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Package {
-    name: String,
-    version: String,
+    pub name: String,
+    pub version: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Docker {
-    name: Option<String>,
-    version: Option<String>,
-    image: Option<String>,
-    maintainer: Option<String>,
-    packages: Option<Packages>,
+    pub name: Option<String>,
+    pub version: Option<String>,
+    pub image: Option<String>,
+    pub maintainer: Option<String>,
+    pub tag: Option<String>,
+    pub custom_tags: Option<Vec<String>>,
+    pub packages: Option<Packages>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Packages {
-    build: Option<String>,
-    image: Option<String>,
+    pub build: Option<String>,
+    pub image: Option<String>,
 }
 
 pub fn parse() -> Config {

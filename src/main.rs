@@ -1,5 +1,8 @@
 use clap::{App, Arg, SubCommand};
 use colored::*;
+use std::fs;
+use std::path::Path;
+use std::process::Command;
 
 mod template;
 mod config;
@@ -43,6 +46,12 @@ fn main() {
                         .short("a")
                         .long("all"),
                 )
+                .arg(
+                    Arg::with_name("keep-temporary-files")
+                        .help("Keep temporary files after build execution")
+                        .short("k")
+                        .long("keep-temporary-files"),
+                )
         )
         .get_matches();
 
@@ -53,6 +62,8 @@ fn main() {
     let build = all || options.is_present("build");
     let push = all || options.is_present("push");
     let eject = options.is_present("eject");
+    let keep_files = options.is_present("keep-temporary-files");
+
     let value = config::parse();
 
     if eject {
@@ -62,6 +73,7 @@ fn main() {
         println!("{}", "Task completed successfully, files:".bright_green());
         println!("    - {}", "./Dockerfile".bright_green());
         println!("    - {}", "./.dockerignore".bright_green());
+        println!("");
         std::process::exit(0);
     }
 
@@ -69,12 +81,108 @@ fn main() {
 
     if build {
         print_into(&"Build".bright_green());
-        result = 0;
+        let tmp = "./some/dir";
+        fs::create_dir_all(tmp).expect("Could not create temporary directory for Docker");
+        template::save(tmp, &value.clone());
+        let dockerfile = Path::new(tmp).join("./Dockerfile").canonicalize().expect("Could not found Dockerfile in temporary directory");
+
+        let mut command = Command::new("docker");
+        command.arg("build");
+
+        // match value.docker.is_some() {
+        //     true => 
+        // }
+
+        let mut check = value.clone();
+        if check.docker.is_some() && check.docker.unwrap().tag.is_some() {
+            let docker = value.clone();
+            let tag = format!("{}", docker.docker.unwrap().tag.unwrap());
+            command.arg("-t");
+            command.arg(format!("{}:{}", tag, value.package.version.as_str()));
+
+            command.arg("-t");
+            command.arg(format!("{}:{}", tag, "latest"));
+        }
+
+        check = value.clone();
+        if check.docker.is_some() && check.docker.unwrap().custom_tags.is_some() {
+            for tag in value.clone().docker.unwrap().custom_tags.unwrap() {
+                command.arg("-t");
+                command.arg(tag);
+            }
+        }
+
+        command.arg("--file");
+        command.arg(dockerfile.as_os_str());
+        command.arg(".");
+
+        println!("{}", "Docker Command".bright_green());
+        println!("  - {:?}", command);
+        println!("");
+
+        println!("********************    DOCKER    ********************");
+        
+        let status = command.status().expect("failed to execute process");
+        
+        if !keep_files {
+            fs::remove_dir_all(tmp).expect("Could not remove temporal directory for Docker");
+        }
+        
+        println!("******************************************************");
+        println!("");
+        result = status.code().expect("Could not load status from Docker execution");
+        
+        if result != 0 {
+            println!("{}", "Could not run docker build command".bright_red());
+            println!("");
+            std::process::exit(result)
+        }
     }
 
     if push {
         print_into(&"Push".bright_green());
+        
+        let mut check = value.clone();
+        let mut all_tags = vec![];
+        if check.docker.is_some() && check.docker.unwrap().tag.is_some() {
+            let docker = value.clone();
+            let tag = format!("{}", docker.docker.unwrap().tag.unwrap());
+            let tag_version = format!("{}:{}", tag, value.package.version.as_str());
+            let tag_latest = format!("{}:{}", tag, "latest");
+            all_tags.push(tag_version);
+            all_tags.push(tag_latest);
+
+            // Command::new("docker").arg("push").arg(tag_version).status().expect("Push");
+            // Command::new("docker").arg("push").arg(tag_latest).status().expect("Push");
+        }
+
+        check = value.clone();
+        if check.docker.is_some() && check.docker.unwrap().custom_tags.is_some() {
+            for tag in value.clone().docker.unwrap().custom_tags.unwrap() {
+                all_tags.push(tag);
+                // Command::new("docker").arg("push").arg(tag).status().expect("Push");
+            }
+        }
+
+        println!("{}", "Docker Commands".bright_green());
+        println!("  - docker push {}", all_tags.join("\n  - docker push "));
+        println!("");
+
+        for tag in all_tags {
+            let code = Command::new("docker").arg("push").arg(tag).status().expect("Push").code().expect("Error");
+            if code != 0 {
+                std::process::exit(code);
+            }
+        }
+
+        println!("");
         result = 0;
+
+        if result != 0 {
+            println!("{}", "Could not run docker push commands".bright_red());
+            println!("");
+            std::process::exit(result)
+        }
     }
 
     match result == 0 {
@@ -91,6 +199,7 @@ fn main() {
             println!("");
 
             println!("{}", "Cargo Docker @ Gary Ascuy <gary.ascuy@gmail.com>".bright_blue());
+            println!("");
             std::process::exit(result);
         }
     }

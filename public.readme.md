@@ -9,15 +9,44 @@ Creates Dockerfile & .dockerignore files into a rocket project.
 $ cargo docker --eject
 ```
 
+Build Docker Image from Rocket Project
+```sh
+$ cargo docker --build
+```
+
+Push Docker images from Rocket Project
+```sh
+$ cargo docker --push
+```
+
+Build and Push Docker images from Rocket Project, many alternatives
+```sh
+$ cargo docker --all
+$ cargo docker -a
+$ cargo docker -bpk # [B]uild, [P]ush, [K] Keep Docker Files
+```
+
 #### Add following settings in your `Cargo.toml`
 
 Basic Configuration
 ```toml
 [docker]
-name = "package-name"
-version = "1.0.0"
+name = "server"
+version = "0.1.0"
 maintainer = "Team Name <mail@company.com>"
-tag = "garyascuy/package-name"
+tag = "garyascuy/cargo-rocket-example"
+```
+
+```toml
+[docker]
+name = "server"
+version = "0.1.0"
+maintainer = "Team Name <mail@company.com>"
+tag = "garyascuy/cargo-rocket-example"
+custom_tags = [
+    "registry.gitlab.com/garyascuy:latest",
+    "registry.gitlab.com/garyascuy:1.0.0",
+]
 ```
 
 Alternative with Alpine PKG Dependencies for development and production
@@ -26,6 +55,11 @@ Alternative with Alpine PKG Dependencies for development and production
 name = "package-name"
 version = "1.0.0"
 maintainer = "Team Name <mail@company.com>" 
+tag = "garyascuy/cargo-rocket-example"
+custom_tags = [
+    "registry.gitlab.com/garyascuy:latest",
+    "registry.gitlab.com/garyascuy:1.0.0",
+]
 
 [docker.packages]
 build = "acf-openssl"
@@ -39,7 +73,7 @@ name = "package-name" # docker will copy from target/release/{package-name}
 version = "1.0.0"     # Docker image version
 maintainer = "Team Name <mail@company.com>" 
 tag = "account/back" # Docker tag base, it will create account/back:{version} and account/back:latest
-tags = [ # docker build will use these spesific tags to create the images and publish
+custom_tags = [ # docker build will use these spesific tags to create the images and publish
     "garyascuy/server:1.0.0",
     "garyascuy/server:latest",
 ]

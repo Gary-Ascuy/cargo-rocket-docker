@@ -1,6 +1,6 @@
 [package]
 name = "cargo-rocket-docker"
-version = "0.2.1"
+version = "0.3.0"
 authors = ["Gary Ascuy <gary.ascuy@gmail.com>"]
 edition = "2018"
 categories = ["development-tools"]
