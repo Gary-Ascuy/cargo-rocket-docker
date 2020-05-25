@@ -4,6 +4,13 @@ use colored::*;
 mod template;
 mod config;
 
+fn print_into(command: &ColoredString) {
+    let message = format!("{} Command Execution - Cargo Docker @ {}", command, "Gary Ascuy".bright_blue());
+    println!("{}", message);
+    println!("Project: {}", env!("CARGO_MANIFEST_DIR"));
+    println!("");
+}
+
 fn main() {
     let opts = App::new("cargo")
         .bin_name("cargo")
@@ -42,28 +49,49 @@ fn main() {
     let options = opts.subcommand_matches("docker")
         .expect("cargo-rocket-docker must be used as a subcommand");
 
-    // let all = options.is_present("all");
-    // let build = options.is_present("build");
-    // let push = options.is_present("push");
-
+    let all = options.is_present("all");
+    let build = all || options.is_present("build");
+    let push = all || options.is_present("push");
     let eject = options.is_present("eject");
     let value = config::parse();
 
-    match eject {
-        true => {
-            println!("Eject Command Execution - Cargo Docker");
-            println!("Project Path: {}", env!("CARGO_MANIFEST_DIR"));
-            
-            template::save(".", &value);
-            println!("{}", "Task completed successfully, files:".bright_green());
-            println!("    - {}", "./Dockerfile".bright_green());
-            println!("    - {}", "./.dockerignore".bright_green());
-            std::process::exit(0);
-        },
+    if eject {
+        print_into(&"Eject".bright_green());
+        
+        template::save(".", &value);
+        println!("{}", "Task completed successfully, files:".bright_green());
+        println!("    - {}", "./Dockerfile".bright_green());
+        println!("    - {}", "./.dockerignore".bright_green());
+        std::process::exit(0);
+    }
+
+    let mut result = 1;
+
+    if build {
+        print_into(&"Build".bright_green());
+        result = 0;
+    }
+
+    if push {
+        print_into(&"Push".bright_green());
+        result = 0;
+    }
+
+    match result == 0 {
+        true => std::process::exit(result),
         false => {
-            println!("{}", "WIP - Under Implementation".bright_red());
-            println!("{}", "Gary Ascuy <gary.ascuy@gmail.com>".bright_red());
-            std::process::exit(1);
-        },
+            println!("{} {}", "¯\\_(ツ)_/¯".blue(), "so I dont know what do you want to execute, please help me!".bright_red());
+
+            println!("");
+            println!("Cargo Docker Examples:");
+            println!("    - {}", "cargo docker --build");
+            println!("    - {}", "cargo docker --push");
+            println!("    - {}", "cargo docker --all");
+            println!("    - {}", "cargo docker --eject");
+            println!("");
+
+            println!("{}", "Cargo Docker @ Gary Ascuy <gary.ascuy@gmail.com>".bright_blue());
+            std::process::exit(result);
+        }
     }
 }
