@@ -2,7 +2,26 @@
 
 Automate tool sub-command to create a docker image for Rocket Project and build/publish them using Alpine OS.
 
-## Install 
+## References 
+
+- https://crates.io/crates/cargo-rocket-docker
+- https://github.com/Gary-Ascuy/cargo-rocket-docker
+- https://github.com/Gary-Ascuy/rust-rest-api
+- https://hub.docker.com/repository/docker/garyascuy/cargo-rocket-example
+
+## Docker Image - Tested in MachOS
+
+```sh
+garyascuy/cargo-rocket-example:1.0.0
+OS/ARCH: linux/amd64 
+SIZE: 4.31 MB # WOOOOOOOOWWW ~5Mb
+LAST PUSHED: 12 minutes ago by garyascuy
+```
+
+## Setup
+
+- Rust Nightly Version
+- Docker Latest
 
 ```sh
 $ cargo install cargo-rocket-docker
